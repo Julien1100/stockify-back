@@ -4,6 +4,8 @@ import "dotenv/config";
 import mongoose from "mongoose";
 import cors from "cors";
 
+import productRouter from "./routes/productRoute";
+
 const app = express();
 const port = process.env.PORT;
 
@@ -20,6 +22,8 @@ app.use(cors());
 app.get("/", (req, res) => {
   res.send("Stockify");
 });
+
+app.use("/products", productRouter);
 
 app.listen(port, () => {
   console.log(`Stockify running - http://localhost:${port}`);
