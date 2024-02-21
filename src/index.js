@@ -7,7 +7,7 @@ import cors from "cors";
 import productRouter from "./routes/productRoute";
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 4000;
 
 main().catch((err) => console.log(err));
 
