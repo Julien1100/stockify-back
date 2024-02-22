@@ -1,4 +1,5 @@
 import express from "express";
+import bodyParser from "body-parser";
 import volleyball from "volleyball";
 import "dotenv/config";
 import mongoose from "mongoose";
@@ -8,6 +9,9 @@ import productRouter from "./routes/productRoute";
 
 const app = express();
 const port = process.env.PORT || 4000;
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 main().catch((err) => console.log(err));
 
