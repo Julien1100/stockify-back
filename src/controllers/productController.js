@@ -51,6 +51,7 @@ const createProduct = async (req, res) => {
 
     res.status(201).json({ message: "Produit créé", product: newProduct });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Erreur lors de la requête" });
   }
 };
