@@ -1,10 +1,5 @@
 import User from "../models/userModel";
 
-/*
-TODO:
-- create, get all, get one, modify, delete
-*/
-
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await User.find();
@@ -59,6 +54,12 @@ const updateUser = async (req, res) => {
   try {
     const userId = req.params.userId;
     const updateData = req.body;
+    const { role } = req.body;
+
+    // Vérification si le rôle est valide
+    if (!["admin", "moderator", "user"].includes(role)) {
+      return res.status(400).send("Rôle invalide");
+    }
 
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
       new: true,
@@ -77,7 +78,7 @@ const updateUser = async (req, res) => {
 const deleteUser = async (req, res) => {
   try {
     const userId = req.params.userId;
-    const deletedUser = User.findByIdAndDelete(userId);
+    const deletedUser = await User.findByIdAndDelete(userId);
 
     if (!deletedUser) {
       return res.status(400).send("Utilisateur introuvable");

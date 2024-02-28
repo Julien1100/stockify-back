@@ -6,6 +6,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 
 import productRouter from "./routes/productRoute";
+import userRouter from "./routes/userRoute";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -28,6 +29,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/products", productRouter);
+app.use("/user", userRouter);
 
 app.listen(port, () => {
   console.log(`Stockify running - http://localhost:${port}`);
