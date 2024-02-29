@@ -22,9 +22,9 @@ const getOneUser = async (req, res) => {
   }
 };
 
-const createUser = async (req, res) => {
+const register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, role } = req.body;
+    const { email } = req.body;
 
     // Vérification que l'utilisateur n'existe pas déjà
     const existingUser = await User.findOne({ email });
@@ -33,19 +33,19 @@ const createUser = async (req, res) => {
     }
 
     // Création de l'utilisateur
-    const newUser = new User({
-      firstName,
-      lastName,
-      email,
-      password,
-      role,
-    });
+    const newUser = await new User();
+    newUser.firstName = req.body.firstName;
+    newUser.lastName = req.body.lastName;
+    newUser.email = req.body.email;
+    newUser.password = await newUser.encrypt(req.body.password);
+    newUser.role = req.body.role;
 
     // Sauvegarde de l'utilisateur
     await newUser.save();
 
     res.status(201).json({ message: "Utilisateur créé", user: newUser });
   } catch (error) {
+    console.log(error);
     res.status(500).send("Erreur lors de la requête");
   }
 };
@@ -90,4 +90,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { getAllUsers, getOneUser, createUser, updateUser, deleteUser };
+export { getAllUsers, getOneUser, register, updateUser, deleteUser };
