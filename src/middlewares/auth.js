@@ -26,6 +26,7 @@ const generateAuthToken = (user) => {
   const userData = {
     id: user.id,
     email: user.email,
+    role: user.role,
   };
   const token = jwt.sign({ userData }, process.env.JWT_SECRET, {
     expiresIn: "7d",
