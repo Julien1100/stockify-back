@@ -1,26 +1,5 @@
+import { generateAuthToken } from "../middlewares/auth";
 import User from "../models/userModel";
-
-const getAllUsers = async (req, res) => {
-  try {
-    const allUsers = await User.find();
-    res.send(allUsers);
-  } catch (error) {
-    res.status(500).send("Erreur lors de la requête");
-  }
-};
-
-const getOneUser = async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).send("Utilisateur introuvable");
-    }
-    res.send(user);
-  } catch (error) {
-    res.status(500).send("Erreur lors de la requête");
-  }
-};
 
 const register = async (req, res) => {
   try {
@@ -46,6 +25,46 @@ const register = async (req, res) => {
     res.status(201).json({ message: "Utilisateur créé", user: newUser });
   } catch (error) {
     console.log(error);
+    res.status(500).send("Erreur lors de la requête");
+  }
+};
+
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email }).select("+password");
+    const verify = await user.passwordVerification(password, user.password);
+    if (!verify) {
+      const error = new Error("Mot de passe invalide");
+      throw error;
+    }
+    const token = generateAuthToken(user);
+
+    res.send(`Vous êtes connecté 🥳\n${token}`);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Erreur lors de la connexion");
+  }
+};
+
+const getAllUsers = async (req, res) => {
+  try {
+    const allUsers = await User.find();
+    res.send(allUsers);
+  } catch (error) {
+    res.status(500).send("Erreur lors de la requête");
+  }
+};
+
+const getOneUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).send("Utilisateur introuvable");
+    }
+    res.send(user);
+  } catch (error) {
     res.status(500).send("Erreur lors de la requête");
   }
 };
@@ -90,4 +109,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { getAllUsers, getOneUser, register, updateUser, deleteUser };
+export { getAllUsers, getOneUser, register, login, updateUser, deleteUser };
