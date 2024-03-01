@@ -79,14 +79,19 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   const productId = req.params.productId;
+  const { role } = req.user;
 
   try {
-    const deletedProduct = await Product.findByIdAndDelete(productId);
+    if (role === "admin" || role === "moderator") {
+      const deletedProduct = await Product.findByIdAndDelete(productId);
 
-    if (!deletedProduct) {
-      return res.status(404).json({ message: "Produit non trouvé" });
+      if (!deletedProduct) {
+        return res.status(404).json({ message: "Produit non trouvé" });
+      }
+      res.status(204).send();
+    } else {
+      res.status(401).send("Non autorisé");
     }
-    res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: "Erreur lors de la requête" });
   }
