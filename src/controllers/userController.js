@@ -3,7 +3,7 @@ import User from "../models/userModel";
 
 const register = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
 
     // Vérification que l'utilisateur n'existe pas déjà
     const existingUser = await User.findOne({ email });
@@ -11,13 +11,17 @@ const register = async (req, res) => {
       return res.status(400).send("Cet e-mail est déjà utilisé");
     }
 
+    // Encryptage du password
+    const hashedPassword = await User.encrypt(password); // Utilisation de la méthode statique
+
     // Création de l'utilisateur
-    const newUser = await new User();
-    newUser.firstName = req.body.firstName;
-    newUser.lastName = req.body.lastName;
-    newUser.email = req.body.email;
-    newUser.password = await newUser.encrypt(req.body.password);
-    newUser.role = req.body.role;
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+      role,
+    });
 
     // Sauvegarde de l'utilisateur
     await newUser.save();
@@ -50,7 +54,13 @@ const login = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await User.find();
-    res.send(allUsers);
+    const { role } = req.user;
+
+    if (role === "admin") {
+      res.send(allUsers);
+    } else {
+      res.status(401).send("Non autorisé");
+    }
   } catch (error) {
     res.status(500).send("Erreur lors de la requête");
   }
@@ -60,10 +70,17 @@ const getOneUser = async (req, res) => {
   try {
     const userId = req.params.userId;
     const user = await User.findById(userId);
+    const { role, id } = req.user;
+
     if (!user) {
       return res.status(404).send("Utilisateur introuvable");
     }
-    res.send(user);
+
+    if (role === "admin" || id === userId) {
+      res.send(user);
+    } else {
+      res.status(401).send("Non autorisé");
+    }
   } catch (error) {
     res.status(500).send("Erreur lors de la requête");
   }
@@ -75,9 +92,16 @@ const updateUser = async (req, res) => {
     const updateData = req.body;
     const { role } = req.body;
 
-    // Vérification si le rôle est valide
-    if (!["admin", "moderator", "user"].includes(role)) {
+    // Vérification si le rôle est modifié et si il est valide
+    if (role && !["admin", "moderator", "user"].includes(role)) {
       return res.status(400).send("Rôle invalide");
+    }
+
+    // Vérification et encryption du nouveau mot de passe s'il est présent dans les données de mise à jour
+    if (updateData.password) {
+      console.log(`1 - ${updateData.password}`);
+      updateData.password = await User.encrypt(updateData.password);
+      console.log(`2 - ${updateData.password}`);
     }
 
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
@@ -90,6 +114,7 @@ const updateUser = async (req, res) => {
 
     res.send(updatedUser);
   } catch (error) {
+    console.log(error);
     res.status(500).send("Erreur lors de la requête");
   }
 };
@@ -98,12 +123,17 @@ const deleteUser = async (req, res) => {
   try {
     const userId = req.params.userId;
     const deletedUser = await User.findByIdAndDelete(userId);
+    const { role, id } = req.user;
 
     if (!deletedUser) {
-      return res.status(400).send("Utilisateur introuvable");
+      return res.status(404).send("Utilisateur introuvable");
     }
 
-    res.status(204).send();
+    if (role === "admin" || id === userId) {
+      res.status(204).send();
+    } else {
+      res.status(401).send("Non autorisé");
+    }
   } catch (error) {
     res.status(500).send("Erreur lors de la requête");
   }

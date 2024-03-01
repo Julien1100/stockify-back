@@ -8,6 +8,8 @@ import cors from "cors";
 import productRouter from "./routes/productRoute";
 import userRouter from "./routes/userRoute";
 
+import { auth } from "./middlewares/auth";
+
 const app = express();
 const port = process.env.PORT || 4000;
 
@@ -28,7 +30,7 @@ app.get("/", (req, res) => {
   res.send("Stockify");
 });
 
-app.use("/products", productRouter);
+app.use("/products", auth, productRouter);
 app.use("/user", userRouter);
 
 app.listen(port, () => {
