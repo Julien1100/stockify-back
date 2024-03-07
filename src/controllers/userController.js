@@ -44,10 +44,9 @@ const login = async (req, res) => {
     }
     const token = generateAuthToken(user);
 
-    res.send(`Vous êtes connecté 🥳\n${token}`);
+    res.json({ success: true, token: token });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Erreur lors de la connexion");
+    res.status(500).json({ success: false, message: "Non authentifié" });
   }
 };
 
