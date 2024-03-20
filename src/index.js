@@ -11,7 +11,7 @@ import userRouter from "./routes/userRoute";
 import { auth } from "./middlewares/auth";
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -27,7 +27,7 @@ app.use(volleyball);
 app.use(cors());
 
 app.get("/", (req, res) => {
-  res.send("Stockify");
+  res.json({ message: "Stockify" });
 });
 
 app.use("/products", auth, productRouter);
