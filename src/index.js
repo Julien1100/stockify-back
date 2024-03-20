@@ -36,3 +36,5 @@ app.use("/user", userRouter);
 app.listen(port, () => {
   console.log(`Stockify running - http://localhost:${port}`);
 });
+
+export default app;
