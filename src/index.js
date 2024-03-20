@@ -27,7 +27,7 @@ app.use(volleyball);
 app.use(cors());
 
 app.get("/", (req, res) => {
-  res.send("Stockify");
+  res.json({ message: "Stockify" });
 });
 
 app.use("/products", auth, productRouter);
@@ -36,3 +36,5 @@ app.use("/user", userRouter);
 app.listen(port, () => {
   console.log(`Stockify running - http://localhost:${port}`);
 });
+
+export default app;
