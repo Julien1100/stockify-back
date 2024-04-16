@@ -37,10 +37,16 @@ const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      res.status(404).json({ success: false, message: "Email incorrect" });
+      return;
+    }
     const verify = await user.passwordVerification(password, user.password);
     if (!verify) {
-      const error = new Error("Mot de passe invalide");
-      throw error;
+      res
+        .status(404)
+        .json({ success: false, message: "Mot de passe incorrect" });
+      return;
     }
     const token = generateAuthToken(user);
 
