@@ -104,9 +104,7 @@ const updateUser = async (req, res) => {
 
     // Vérification et encryption du nouveau mot de passe s'il est présent dans les données de mise à jour
     if (updateData.password) {
-      console.log(`1 - ${updateData.password}`);
       updateData.password = await User.encrypt(updateData.password);
-      console.log(`2 - ${updateData.password}`);
     }
 
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
