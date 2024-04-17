@@ -6,6 +6,7 @@ import {
   getAllUsers,
   getOneUser,
   updateUser,
+  updatePasswordUser,
 } from "../controllers/userController";
 import { auth } from "../middlewares/auth";
 
@@ -16,6 +17,7 @@ userRouter.get("/:userId", auth, getOneUser);
 userRouter.post("/register", register);
 userRouter.post("/login", login);
 userRouter.put("/update/:userId", auth, updateUser);
+userRouter.patch("/update/password/:userId", auth, updatePasswordUser);
 userRouter.delete("/:userId", auth, deleteUser);
 
 export default userRouter;
