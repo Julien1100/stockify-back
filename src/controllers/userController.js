@@ -122,6 +122,27 @@ const updateUser = async (req, res) => {
   }
 };
 
+const updatePasswordUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const data = req.body;
+
+    data.password = await User.encrypt(data.password);
+
+    const updatedData = await User.findByIdAndUpdate(userId, data.password);
+
+    if (!updatedData) {
+      res
+        .status(404)
+        .json({ success: false, message: "Utilisateur introuvable" });
+    }
+
+    res.status(200).json({ success: true, message: "Mot de passe mis à jour" });
+  } catch (error) {
+    res.status(500).send("Erreur lors de la requête");
+  }
+};
+
 const deleteUser = async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -142,4 +163,12 @@ const deleteUser = async (req, res) => {
   }
 };
 
-export { getAllUsers, getOneUser, register, login, updateUser, deleteUser };
+export {
+  getAllUsers,
+  getOneUser,
+  register,
+  login,
+  updateUser,
+  updatePasswordUser,
+  deleteUser,
+};
