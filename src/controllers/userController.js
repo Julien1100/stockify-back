@@ -125,17 +125,21 @@ const updateUser = async (req, res) => {
 const updatePasswordUser = async (req, res) => {
   try {
     const userId = req.params.userId;
-    const data = req.body;
+    const { password } = req.body;
 
-    data.password = await User.encrypt(data.password);
+    const user = await User.findById(userId);
 
-    const updatedData = await User.findByIdAndUpdate(userId, data.password);
-
-    if (!updatedData) {
+    if (!user) {
       res
         .status(404)
         .json({ success: false, message: "Utilisateur introuvable" });
     }
+
+    const updatedPassword = await User.encrypt(password);
+
+    user.password = updatedPassword;
+
+    user.save();
 
     res.status(200).json({ success: true, message: "Mot de passe mis à jour" });
   } catch (error) {
