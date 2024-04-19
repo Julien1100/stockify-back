@@ -135,7 +135,7 @@ const updatePasswordUser = async (req, res) => {
         .json({ success: false, message: "Utilisateur introuvable" });
     }
 
-    const updatedPassword = await User.encrypt(password);
+    const updatedPassword = await User.encrypt(password.password);
 
     user.password = updatedPassword;
 
@@ -143,6 +143,7 @@ const updatePasswordUser = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Mot de passe mis à jour" });
   } catch (error) {
+    console.log(error);
     res.status(500).send("Erreur lors de la requête");
   }
 };
